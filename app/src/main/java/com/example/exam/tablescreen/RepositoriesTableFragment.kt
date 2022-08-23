@@ -6,23 +6,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.exam.BaseFragment
 import com.example.exam.databinding.FragmentRepositoriesTableBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-class RepositoriesTableFragment : Fragment() {
+@AndroidEntryPoint
+class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>() {
 
     private val viewModel: RepositoriesTableViewModel by viewModels()
-    private val binding = FragmentRepositoriesTableBinding.inflate(layoutInflater)
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
-    }
+    override fun getViewBinding() = FragmentRepositoriesTableBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        with(binding){
+            viewLifecycleOwner.lifecycleScope.launch{
+                repositoriesList.adapter = RepositoryAdapter(viewModel.getRepositoriesList()){
+                    findNavController().navigate(RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                        it.name, it.owner.userImage, it.description
+                    ))
+                }
+            }
+            repositoriesList.layoutManager = LinearLayoutManager(view.context)
+        }
     }
 
 }

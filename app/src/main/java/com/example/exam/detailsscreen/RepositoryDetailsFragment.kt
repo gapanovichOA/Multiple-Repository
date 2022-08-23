@@ -6,23 +6,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
+import coil.load
+import coil.size.Scale
+import coil.size.ViewSizeResolver
+import com.example.exam.BaseFragment
 import com.example.exam.databinding.FragmentRepositoryDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-class RepositoryDetailsFragment : Fragment() {
+@AndroidEntryPoint
+class RepositoryDetailsFragment : BaseFragment<FragmentRepositoryDetailsBinding>() {
 
-    private val viewModel: RepositoryDetailsViewModel by viewModels()
-    private val binding = FragmentRepositoryDetailsBinding.inflate(layoutInflater)
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
-    }
+    private val navArguments: RepositoryDetailsFragmentArgs by navArgs()
+    override fun getViewBinding() = FragmentRepositoryDetailsBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        with(binding){
+            title.text = navArguments.title
+            description.text = navArguments.description
+            repository.text = "Github"
+            userImage.load(navArguments.userImage){
+                scale(Scale.FIT)
+                size(ViewSizeResolver(root))
+            }
+        }
     }
 
 }

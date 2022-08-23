@@ -19,5 +19,14 @@
         <action
             android:id="@+id/action_repositoryDetailsFragment_to_repositoriesTableFragment"
             app:destination="@id/repositoriesTableFragment" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="userImage"
+            app:argType="string" />
+        <argument
+            android:name="description"
+            app:argType="string" />
     </fragment>
 </navigation>
