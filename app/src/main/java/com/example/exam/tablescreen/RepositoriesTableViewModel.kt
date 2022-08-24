@@ -34,13 +34,18 @@ class RepositoriesTableViewModel @Inject constructor(
         _queryLiveData.value = query
     }
 
-
-    fun onChangedState(state: ListState) {
+    fun onChangedState(state: ListState = ListState.DefaultState) {
         repositoryState.value = state
     }
 
     fun onClickSearch(query: String){
         repositoryState.value = ListState.SearchState(query)
+    }
+
+    fun onRefresh(){
+        bitbucketList.clear()
+        githubList.clear()
+        onChangedState()
     }
 
     suspend fun getRepositoriesList(): List<RepositoryModel> {

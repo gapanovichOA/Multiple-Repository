@@ -58,6 +58,10 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
                     }
                 }
                 repositoriesList.layoutManager = LinearLayoutManager(view.context)
+                swipeRefreshLayout.setOnRefreshListener {
+                    viewModel.onRefresh()
+                    swipeRefreshLayout.isRefreshing = false
+                }
                 topAppBar.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.search -> {
