@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.viewModels
@@ -62,6 +63,20 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
                 topAppBar.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
                         R.id.search -> {
+                            val searchView = menuItem.actionView as SearchView
+                            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                                override fun onQueryTextSubmit(query: String?): Boolean {
+                                    viewModel.onQuerySubmit(query ?: "")
+                                    return false
+                                }
+
+                                override fun onQueryTextChange(newText: String?): Boolean {
+                                    return false
+                                }
+                            })
+                            viewModel.queryLiveData.observe(viewLifecycleOwner) { query ->
+                                viewModel.onClickSearch(query)
+                            }
                             true
                         }
                         R.id.more -> {

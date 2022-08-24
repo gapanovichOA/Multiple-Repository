@@ -1,5 +1,6 @@
 package com.example.exam.tablescreen
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,9 +26,21 @@ class RepositoriesTableViewModel @Inject constructor(
     val repositoryState = MutableLiveData<ListState>()
     private val githubList = mutableListOf<RepositoryModel.GithubRepositoryModel>()
     private val bitbucketList = mutableListOf<RepositoryModel.BitbucketRepositoryModel>()
+    private var _queryLiveData: MutableLiveData<String> = MutableLiveData()
+    val queryLiveData: LiveData<String>
+        get() = _queryLiveData
+
+    fun onQuerySubmit(query: String) {
+        _queryLiveData.value = query
+    }
+
 
     fun onChangedState(state: ListState) {
         repositoryState.value = state
+    }
+
+    fun onClickSearch(query: String){
+        repositoryState.value = ListState.SearchState(query)
     }
 
     private suspend fun getGithubRepositoriesList(): List<RepositoryModel.GithubRepositoryModel> {
@@ -70,6 +83,9 @@ class RepositoriesTableViewModel @Inject constructor(
             is ListState.DefaultState -> {
                 bitbucketList + githubList
             }
+            is ListState.SearchState ->{
+                (bitbucketList + githubList).find(queryLiveData.value?:"")
+            }
             else -> {
                 emptyList()
             }
@@ -106,3 +122,31 @@ private fun List<RepositoryModel>.sortAlphabetical(): List<RepositoryModel>{
         }
     }
 }
+
+private fun List<RepositoryModel>.find(query: String): List<RepositoryModel>{
+    val list = this.map {
+        when (it) {
+            is RepositoryModel.GithubRepositoryModel -> {
+                it.toGeneralModel()
+            }
+            is RepositoryModel.BitbucketRepositoryModel -> {
+                it.toGeneralModel()
+            }
+        }
+    }.filter {
+        it.name.contains(query) || it.type.contains(query)
+    }
+    return list.map {
+        if ((it.type.equals("Github"))) {
+            RepositoryModel.GithubRepositoryModel(
+                it.name,
+                GithubUserModel(it.userImage), it.description
+            )
+        } else {
+            RepositoryModel.BitbucketRepositoryModel(
+                it.name, it.description, it.userImage
+            )
+        }
+    }
+}
+
