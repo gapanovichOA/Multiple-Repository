@@ -1,22 +1,20 @@
 package com.example.data.repository
 
+import com.example.data.service.BitbucketApi
 import com.example.data.service.GithubApi
 import com.example.data.toDomainModel
 import com.example.domain.model.RepositoryModel
-import com.example.domain.repository.GithubRepository
+import com.example.domain.repository.BitbucketRepository
 import java.lang.Exception
 
-class GithubRepositoryImpl(private val githubApi: GithubApi): GithubRepository {
+class BitbucketRepositoryImpl(private val bitbucketApi: BitbucketApi): BitbucketRepository {
 
-    override suspend fun getGithubRepositories(): List<RepositoryModel.GithubRepositoryModel> {
-        val response = githubApi.getRepositories()
+    override suspend fun getBitbucketRepositories(): List<RepositoryModel.BitbucketRepositoryModel> {
+        val response = bitbucketApi.getRepositories(FIELDS)
         return if (response.isSuccessful) {
-            var repositoriesList = response.body() ?: throw Exception(NULL_BODY)
-            repositoriesList = repositoriesList.filter {
-                it.description != null
-            }
-            repositoriesList.map{ githubRepository ->
-                githubRepository.toDomainModel()
+            val repositoriesList = response.body()?.values ?: throw Exception(NULL_BODY)
+            repositoriesList.map{ bitbucketRepository ->
+                bitbucketRepository.toDomainModel()
             }
         } else {
             when (response.code()) {
@@ -32,5 +30,6 @@ class GithubRepositoryImpl(private val githubApi: GithubApi): GithubRepository {
         private const val SERVER_ERROR = "Server's error"
         private const val UNEXPECTED_ERROR = "Unexpected error"
         private const val NULL_BODY = "Null body"
+        private const val FIELDS ="values.name,values.owner,values.description"
     }
 }

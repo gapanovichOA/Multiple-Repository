@@ -25,7 +25,7 @@ class RepositoryDetailsFragment : BaseFragment<FragmentRepositoryDetailsBinding>
         with(binding){
             title.text = navArguments.title
             description.text = navArguments.description
-            repository.text = "Github"
+            repository.text = navArguments.repository
             userImage.load(navArguments.userImage){
                 scale(Scale.FIT)
                 size(ViewSizeResolver(root))

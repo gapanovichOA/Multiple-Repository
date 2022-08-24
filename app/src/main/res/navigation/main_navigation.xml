@@ -28,5 +28,8 @@
         <argument
             android:name="description"
             app:argType="string" />
+        <argument
+            android:name="repository"
+            app:argType="string" />
     </fragment>
 </navigation>

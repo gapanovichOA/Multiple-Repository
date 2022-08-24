@@ -3,12 +3,12 @@ package com.example.exam.tablescreen
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.domain.model.GithubRepositoryModel
+import com.example.domain.model.RepositoryModel
 import com.example.exam.databinding.UserItemBinding
 
 class RepositoryAdapter(
-    private val repositories: List<GithubRepositoryModel>,
-    private val onItemClicked: (GithubRepositoryModel) -> Unit
+    private val repositories: List<RepositoryModel>,
+    private val onItemClicked: (RepositoryModel) -> Unit
 ) : RecyclerView.Adapter<RepositoryViewHolder>() {
 
     override fun getItemCount() = repositories.size

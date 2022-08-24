@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.domain.model.RepositoryModel
 import com.example.exam.BaseFragment
 import com.example.exam.databinding.FragmentRepositoriesTableBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,10 +25,20 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
         super.onViewCreated(view, savedInstanceState)
         with(binding){
             viewLifecycleOwner.lifecycleScope.launch{
-                repositoriesList.adapter = RepositoryAdapter(viewModel.getRepositoriesList()){
-                    findNavController().navigate(RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
-                        it.name, it.owner.userImage, it.description
-                    ))
+                repositoriesList.adapter = RepositoryAdapter(viewModel.getRepositoriesList()){ repository->
+                    when(repository){
+                        is RepositoryModel.GithubRepositoryModel->{
+                            findNavController().navigate(RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                                repository.name, repository.owner.userImage, repository.description, "Github"
+                            ))
+                        }
+                        is RepositoryModel.BitbucketRepositoryModel ->{
+                            findNavController().navigate(RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                                repository.name, repository.userImage, repository.description, "Bitbucket"
+                            ))
+                        }
+                    }
+
                 }
             }
             repositoriesList.layoutManager = LinearLayoutManager(view.context)

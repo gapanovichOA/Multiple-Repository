@@ -1,5 +1,6 @@
 package com.example.data.di
 
+import com.example.data.service.BitbucketApi
 import com.example.data.service.GithubApi
 import dagger.Module
 import dagger.Provides
@@ -48,7 +49,24 @@ class NetworkModule {
     fun provideGithubApi(@Named("Github") retrofit: Retrofit): GithubApi =
         retrofit.create(GithubApi::class.java)
 
+    @Singleton
+    @Provides
+    @Named("Bitbucket")
+    fun provideBitbucketRetrofit(okHttpClient: OkHttpClient): Retrofit =
+        Retrofit
+            .Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BITBUCKET_BASE_URL)
+            .client(okHttpClient)
+            .build()
+
+    @Singleton
+    @Provides
+    fun provideBitbucketApi(@Named("Bitbucket") retrofit: Retrofit): BitbucketApi =
+        retrofit.create(BitbucketApi::class.java)
+
     companion object {
         private const val GITHUB_BASE_URL = "https://api.github.com/"
+        private const val BITBUCKET_BASE_URL = "https://api.bitbucket.org/2.0/"
     }
 }
