@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        android:contentDescription="@string/search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:title="@string/search" />
+
+    <item
+        android:id="@+id/more"
+        android:icon ="@drawable/ic_more"
+        android:contentDescription="@string/sort"
+        android:title="@string/sort"
+        app:showAsAction="never">
+        <menu>
+            <item
+                android:id="@+id/option_1"
+                android:title="@string/first_github" />
+            <item
+                android:id="@+id/option_2"
+                android:title="@string/first_bitbucket" />
+            <item
+                android:id="@+id/option_3"
+                android:title="@string/a_z" />
+            <item
+                android:id="@+id/option_4"
+                android:title="@string/z_a" />
+            <item
+                android:id="@+id/option_5"
+                android:title="@string/default_order" />
+
+        </menu>
+    </item>
+
+</menu>

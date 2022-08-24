@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Exam</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="first_github">First Github</string>
+    <string name="first_bitbucket">First Bitbucket</string>
+    <string name="a_z">A-z</string>
+    <string name="z_a">Z-a</string>
+    <string name="default_order">Default order</string>
 </resources>
