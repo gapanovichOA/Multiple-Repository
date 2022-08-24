@@ -28,49 +28,69 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding){
-            viewLifecycleOwner.lifecycleScope.launch{
-                repositoriesList.adapter = RepositoryAdapter(viewModel.getRepositoriesList()){ repository->
-                    when(repository){
-                        is RepositoryModel.GithubRepositoryModel->{
-                            findNavController().navigate(RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
-                                repository.name, repository.owner.userImage, repository.description, "Github"
-                            ))
-                        }
-                        is RepositoryModel.BitbucketRepositoryModel ->{
-                            findNavController().navigate(RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
-                                repository.name, repository.userImage, repository.description, "Bitbucket"
-                            ))
-                        }
-                    }
+        with(binding) {
+            viewModel.repositoryState.observe(viewLifecycleOwner) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repositoriesList.adapter =
+                        RepositoryAdapter(viewModel.getRepositoriesList()) { repository ->
+                            when (repository) {
+                                is RepositoryModel.GithubRepositoryModel -> {
+                                    findNavController().navigate(
+                                        RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                                            repository.name,
+                                            repository.owner.userImage,
+                                            repository.description,
+                                            "Github"
+                                        )
+                                    )
+                                }
+                                is RepositoryModel.BitbucketRepositoryModel -> {
+                                    findNavController().navigate(
+                                        RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                                            repository.name,
+                                            repository.userImage,
+                                            repository.description,
+                                            "Bitbucket"
+                                        )
+                                    )
+                                }
+                            }
 
+                        }
                 }
-            }
-            repositoriesList.layoutManager = LinearLayoutManager(view.context)
-            topAppBar.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.search -> {
-                        true
+                repositoriesList.layoutManager = LinearLayoutManager(view.context)
+                topAppBar.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.search -> {
+                            true
+                        }
+                        R.id.more -> {
+                            true
+                        }
+                        R.id.option_1 -> {
+                            viewModel.onChangedState(ListState.FirstGithubState)
+                            true
+                        }
+                        R.id.option_2 -> {
+                            viewModel.onChangedState(ListState.FirstBitbucketState)
+                            true
+                        }
+                        R.id.option_3 -> {
+                            viewModel.onChangedState(ListState.SortedState)
+                            true
+                        }
+                        R.id.option_4 -> {
+                            viewModel.onChangedState(ListState.ReverseState)
+                            true
+                        }
+                        R.id.option_5 -> {
+                            viewModel.onChangedState(ListState.DefaultState)
+                            true
+                        }
+                        else -> false
                     }
-                    R.id.more -> {
-                        true
-                    }
-                    R.id.option_1->{
-                        true
-                    }
-                    R.id.option_2->{
-                        true
-                    }R.id.option_3->{
-                        true
-                    }R.id.option_4->{
-                        true
-                    }R.id.option_5->{
-                        true
-                    }
-                    else -> false
                 }
             }
         }
     }
-
 }
