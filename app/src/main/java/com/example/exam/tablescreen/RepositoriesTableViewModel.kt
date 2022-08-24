@@ -43,26 +43,18 @@ class RepositoriesTableViewModel @Inject constructor(
         repositoryState.value = ListState.SearchState(query)
     }
 
-    private suspend fun getGithubRepositoriesList(): List<RepositoryModel.GithubRepositoryModel> {
-        val list = viewModelScope.async {
-            getGithubRepositoriesUseCase()
-        }
-        githubList.addAll(list.await())
-        return githubList
-    }
-
-    private suspend fun getBitbucketRepositoriesList(): List<RepositoryModel.BitbucketRepositoryModel> {
-        val list = viewModelScope.async {
-            getBitbucketRepositoriesUseCase()
-        }
-        bitbucketList.addAll(list.await())
-        return bitbucketList
-    }
-
     suspend fun getRepositoriesList(): List<RepositoryModel> {
         if (bitbucketList.isEmpty() && githubList.isEmpty()) {
             return viewModelScope.async {
-                getBitbucketRepositoriesList() + getGithubRepositoriesList()
+                try{
+                val githubRep = async{getGithubRepositoriesUseCase()}
+                val bitbucketRep = async { getBitbucketRepositoriesUseCase() }
+                githubList.addAll(githubRep.await())
+                bitbucketList.addAll(bitbucketRep.await())
+                bitbucketList + githubList}
+                catch (exception: Exception){
+                    throw Exception(exception.message)
+                }
             }.await()
         }
         return when (repositoryState.value) {

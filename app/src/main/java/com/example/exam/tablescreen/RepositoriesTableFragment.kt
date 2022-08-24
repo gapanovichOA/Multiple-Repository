@@ -1,15 +1,9 @@
 package com.example.exam.tablescreen
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.annotation.MenuRes
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -32,32 +26,36 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
         with(binding) {
             viewModel.repositoryState.observe(viewLifecycleOwner) {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    repositoriesList.adapter =
-                        RepositoryAdapter(viewModel.getRepositoriesList()) { repository ->
-                            when (repository) {
-                                is RepositoryModel.GithubRepositoryModel -> {
-                                    findNavController().navigate(
-                                        RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
-                                            repository.name,
-                                            repository.owner.userImage,
-                                            repository.description,
-                                            "Github"
+                    try {
+                        repositoriesList.adapter =
+                            RepositoryAdapter(viewModel.getRepositoriesList()) { repository ->
+                                when (repository) {
+                                    is RepositoryModel.GithubRepositoryModel -> {
+                                        findNavController().navigate(
+                                            RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                                                repository.name,
+                                                repository.owner.userImage,
+                                                repository.description,
+                                                "Github"
+                                            )
                                         )
-                                    )
-                                }
-                                is RepositoryModel.BitbucketRepositoryModel -> {
-                                    findNavController().navigate(
-                                        RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
-                                            repository.name,
-                                            repository.userImage,
-                                            repository.description,
-                                            "Bitbucket"
+                                    }
+                                    is RepositoryModel.BitbucketRepositoryModel -> {
+                                        findNavController().navigate(
+                                            RepositoriesTableFragmentDirections.actionRepositoriesTableFragmentToRepositoryDetailsFragment(
+                                                repository.name,
+                                                repository.userImage,
+                                                repository.description,
+                                                "Bitbucket"
+                                            )
                                         )
-                                    )
+                                    }
                                 }
-                            }
 
-                        }
+                            }
+                    }catch(exception: Exception){
+                        Toast.makeText(requireContext(),exception.message,Toast.LENGTH_LONG).show()
+                    }
                 }
                 repositoriesList.layoutManager = LinearLayoutManager(view.context)
                 topAppBar.setOnMenuItemClickListener { menuItem ->
@@ -69,7 +67,6 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
                                     viewModel.onQuerySubmit(query ?: "")
                                     return false
                                 }
-
                                 override fun onQueryTextChange(newText: String?): Boolean {
                                     return false
                                 }
