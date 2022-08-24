@@ -53,8 +53,9 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
                                 }
 
                             }
-                    }catch(exception: Exception){
-                        Toast.makeText(requireContext(),exception.message,Toast.LENGTH_LONG).show()
+                    } catch (exception: Exception) {
+                        Toast.makeText(requireContext(), exception.message, Toast.LENGTH_LONG)
+                            .show()
                     }
                 }
                 repositoriesList.layoutManager = LinearLayoutManager(view.context)
@@ -66,7 +67,8 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
                     when (menuItem.itemId) {
                         R.id.search -> {
                             val searchView = menuItem.actionView as SearchView
-                            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                            searchView.setOnQueryTextListener(object :
+                                SearchView.OnQueryTextListener {
                                 override fun onQueryTextSubmit(query: String?): Boolean {
                                     viewModel.onQuerySubmit(query ?: "")
                                     return false

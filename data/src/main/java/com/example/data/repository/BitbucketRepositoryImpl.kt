@@ -1,7 +1,6 @@
 package com.example.data.repository
 
 import com.example.data.service.BitbucketApi
-import com.example.data.service.GithubApi
 import com.example.data.toDomainModel
 import com.example.domain.model.RepositoryModel
 import com.example.domain.repository.BitbucketRepository
