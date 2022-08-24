@@ -13,13 +13,16 @@ import com.example.exam.BaseFragment
 import com.example.exam.R
 import com.example.exam.databinding.FragmentRepositoriesTableBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 @AndroidEntryPoint
 class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>() {
 
     private val viewModel: RepositoriesTableViewModel by viewModels()
     override fun getViewBinding() = FragmentRepositoriesTableBinding.inflate(layoutInflater)
+    var debouncePeriod: Long = 500
+    private var searchJob: Job? = null
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,6 +77,13 @@ class RepositoriesTableFragment : BaseFragment<FragmentRepositoriesTableBinding>
                                     return false
                                 }
                                 override fun onQueryTextChange(newText: String?): Boolean {
+                                    searchJob?.cancel()
+                                    searchJob = coroutineScope.launch {
+                                        newText?.let {
+                                            delay(debouncePeriod)
+                                            viewModel.onQuerySubmit(newText)
+                                        }
+                                    }
                                     return false
                                 }
                             })
