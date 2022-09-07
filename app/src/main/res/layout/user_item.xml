@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <com.makeramen.roundedimageview.RoundedImageView
+    <ImageView
         android:id="@+id/user_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -13,8 +13,8 @@
         android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:riv_corner_radius="10dp"
-        tools:src="@tools:sample/avatars" />
+        tools:src="@tools:sample/avatars"
+        android:contentDescription="user_image" />
 
     <TextView
         android:id="@+id/title"
@@ -26,7 +26,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/user_image"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="grit" />
+        tools:text="username" />
 
     <TextView
         android:id="@+id/description"
@@ -37,7 +37,7 @@
         android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/user_image"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="**Grit is no longer maintained. Check out libgit2/rugged.** Grit gives you object oriented read/write access to Git repositories via Ruby." />
+        tools:text="description" />
 
 
     <TextView
@@ -49,7 +49,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Github" />
+        tools:text="repository" />
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"

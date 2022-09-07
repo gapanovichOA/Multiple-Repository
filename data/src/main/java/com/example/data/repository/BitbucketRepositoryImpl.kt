@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import com.example.data.Error
 import com.example.data.service.BitbucketApi
 import com.example.data.toDomainModel
 import com.example.domain.model.RepositoryModel
@@ -11,24 +12,20 @@ class BitbucketRepositoryImpl(private val bitbucketApi: BitbucketApi): Bitbucket
     override suspend fun getBitbucketRepositories(): List<RepositoryModel.BitbucketRepositoryModel> {
         val response = bitbucketApi.getRepositories(FIELDS)
         return if (response.isSuccessful) {
-            val repositoriesList = response.body()?.values ?: throw Exception(NULL_BODY)
+            val repositoriesList = response.body()?.values ?: emptyList()
             repositoriesList.map{ bitbucketRepository ->
                 bitbucketRepository.toDomainModel()
             }
         } else {
             when (response.code()) {
-                in 400..499 -> throw Exception(CLIENT_ERROR)
-                in 500..599 -> throw Exception(SERVER_ERROR)
-                else -> throw Exception(UNEXPECTED_ERROR)
+                in 400..499 -> throw Exception(Error.CLIENT_ERROR.message)
+                in 500..599 -> throw Exception(Error.SERVER_ERROR.message)
+                else -> throw Exception(Error.UNEXPECTED_ERROR.message)
             }
         }
     }
 
     companion object{
-        private const val CLIENT_ERROR = "Client's error"
-        private const val SERVER_ERROR = "Server's error"
-        private const val UNEXPECTED_ERROR = "Unexpected error"
-        private const val NULL_BODY = "Null body"
         private const val FIELDS ="values.name,values.owner,values.description"
     }
 }

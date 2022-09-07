@@ -7,22 +7,35 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.toGeneralModel
 import com.example.domain.model.GithubUserModel
 import com.example.domain.model.RepositoryModel
+import com.example.domain.usecase.CheckInternetConnectionUseCase
 import com.example.domain.usecase.GetBitbucketRepositoriesUseCase
 import com.example.domain.usecase.GetGithubRepositoriesUseCase
+import com.example.exam.App
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class RepositoriesTableViewModel @Inject constructor(
     private val getGithubRepositoriesUseCase: GetGithubRepositoriesUseCase,
-    private val getBitbucketRepositoriesUseCase: GetBitbucketRepositoriesUseCase
+    private val getBitbucketRepositoriesUseCase: GetBitbucketRepositoriesUseCase,
+    private val checkInternetConnectionUseCase: CheckInternetConnectionUseCase
 ) : ViewModel() {
 
-    val repositoryState = MutableLiveData<ListState>()
+    private var _repositoryState = MutableLiveData<ListState>()
+    val repositoryState: LiveData<ListState>
+        get() = _repositoryState
     private val githubList = mutableListOf<RepositoryModel.GithubRepositoryModel>()
     private val bitbucketList = mutableListOf<RepositoryModel.BitbucketRepositoryModel>()
+    private var _repositoriesList = MutableLiveData<List<RepositoryModel>>()
+    val repositoriesList: LiveData<List<RepositoryModel>>
+        get() = _repositoriesList
+    private var _errorLiveData: MutableLiveData<String> = MutableLiveData()
+    val errorLiveData: LiveData<String>
+        get() = _errorLiveData
     private var _queryLiveData: MutableLiveData<String> = MutableLiveData()
     val queryLiveData: LiveData<String>
         get() = _queryLiveData
@@ -32,11 +45,37 @@ class RepositoriesTableViewModel @Inject constructor(
     }
 
     fun onChangedState(state: ListState = ListState.DefaultState) {
-        repositoryState.value = state
+        _repositoryState.value = state
+        when (repositoryState.value) {
+            is ListState.FirstGithubState -> {
+                _repositoriesList.value = githubList + bitbucketList
+            }
+            is ListState.FirstBitbucketState -> {
+                _repositoriesList.value = bitbucketList + githubList
+            }
+            is ListState.SortedState -> {
+                val list = githubList + bitbucketList
+                _repositoriesList.value = list.sortAlphabetical()
+            }
+            is ListState.ReverseState -> {
+                val list = githubList + bitbucketList
+                _repositoriesList.value = list.sortAlphabetical().reversed()
+            }
+            is ListState.DefaultState -> {
+                _repositoriesList.value = bitbucketList + githubList
+            }
+            is ListState.SearchState -> {
+                _repositoriesList.value =
+                    (bitbucketList + githubList).find(queryLiveData.value ?: "")
+            }
+            else -> {
+                _repositoriesList.value = emptyList()
+            }
+        }
     }
 
     fun onClickSearch(query: String) {
-        repositoryState.value = ListState.SearchState(query)
+        _repositoryState.value = ListState.SearchState(query)
     }
 
     fun onRefresh() {
@@ -45,49 +84,27 @@ class RepositoriesTableViewModel @Inject constructor(
         onChangedState()
     }
 
-    suspend fun getRepositoriesList(): List<RepositoryModel> {
-        if (bitbucketList.isEmpty() && githubList.isEmpty()) {
-            return withContext(viewModelScope.coroutineContext) {
+    suspend fun onShowScreen() {
+        if (checkInternetConnectionUseCase.invoke()) {
+            viewModelScope.launch {
                 try {
                     val githubRep = async { getGithubRepositoriesUseCase() }
                     val bitbucketRep = async { getBitbucketRepositoriesUseCase() }
                     githubList.addAll(githubRep.await())
                     bitbucketList.addAll(bitbucketRep.await())
-                    bitbucketList + githubList
+                    _repositoriesList.value = bitbucketList + githubList
                 } catch (exception: Exception) {
-                    throw Exception(exception.message)
+                    _errorLiveData.value = exception.message
+                    _repositoriesList.value = emptyList()
                 }
             }
-        }
-        return when (repositoryState.value) {
-            is ListState.FirstGithubState -> {
-                githubList + bitbucketList
-            }
-            is ListState.FirstBitbucketState -> {
-                bitbucketList + githubList
-            }
-            is ListState.SortedState -> {
-                val list = githubList + bitbucketList
-                list.sortAlphabetical()
-            }
-            is ListState.ReverseState -> {
-                val list = githubList + bitbucketList
-                list.sortAlphabetical().reversed()
-            }
-            is ListState.DefaultState -> {
-                bitbucketList + githubList
-            }
-            is ListState.SearchState -> {
-                (bitbucketList + githubList).find(queryLiveData.value ?: "")
-            }
-            else -> {
-                emptyList()
-            }
+        } else {
+            _errorLiveData.value = "No Internet"
         }
     }
 
     init {
-        repositoryState.value = ListState.FirstBitbucketState
+        _repositoryState.value = ListState.FirstBitbucketState
     }
 
 }

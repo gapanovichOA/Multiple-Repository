@@ -2,6 +2,8 @@ package com.example.exam.di
 
 import com.example.domain.repository.BitbucketRepository
 import com.example.domain.repository.GithubRepository
+import com.example.domain.repository.InternetConnectionRepository
+import com.example.domain.usecase.CheckInternetConnectionUseCase
 import com.example.domain.usecase.GetBitbucketRepositoriesUseCase
 import com.example.domain.usecase.GetGithubRepositoriesUseCase
 import dagger.Module
@@ -20,5 +22,9 @@ class DomainModule {
     @Provides
     fun provideGetBitbucketRepositoriesUseCase(bitbucketRepository: BitbucketRepository): GetBitbucketRepositoriesUseCase {
         return GetBitbucketRepositoriesUseCase(bitbucketRepository)
+    }
+    @Provides
+    fun provideCheckInternetConnectionUseCase(internetConnectionRepository: InternetConnectionRepository): CheckInternetConnectionUseCase{
+        return CheckInternetConnectionUseCase(internetConnectionRepository)
     }
 }

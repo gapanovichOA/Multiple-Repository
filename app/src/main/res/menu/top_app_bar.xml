@@ -18,19 +18,19 @@
         app:showAsAction="never">
         <menu>
             <item
-                android:id="@+id/option_1"
+                android:id="@+id/first_github"
                 android:title="@string/first_github" />
             <item
-                android:id="@+id/option_2"
+                android:id="@+id/first_bitbucket"
                 android:title="@string/first_bitbucket" />
             <item
-                android:id="@+id/option_3"
+                android:id="@+id/alphabetically"
                 android:title="@string/a_z" />
             <item
-                android:id="@+id/option_4"
+                android:id="@+id/reverse"
                 android:title="@string/z_a" />
             <item
-                android:id="@+id/option_5"
+                android:id="@+id/default_order"
                 android:title="@string/default_order" />
 
         </menu>

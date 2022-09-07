@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import com.example.data.Error
 import com.example.data.service.GithubApi
 import com.example.data.toDomainModel
 import com.example.domain.model.RepositoryModel
@@ -11,7 +12,7 @@ class GithubRepositoryImpl(private val githubApi: GithubApi): GithubRepository {
     override suspend fun getGithubRepositories(): List<RepositoryModel.GithubRepositoryModel> {
         val response = githubApi.getRepositories()
         return if (response.isSuccessful) {
-            var repositoriesList = response.body() ?: throw Exception(NULL_BODY)
+            var repositoriesList = response.body() ?: emptyList()
             repositoriesList = repositoriesList.filter {
                 it.description != null
             }
@@ -20,17 +21,10 @@ class GithubRepositoryImpl(private val githubApi: GithubApi): GithubRepository {
             }
         } else {
             when (response.code()) {
-                in 400..499 -> throw Exception(CLIENT_ERROR)
-                in 500..599 -> throw Exception(SERVER_ERROR)
-                else -> throw Exception(UNEXPECTED_ERROR)
+                in 400..499 -> throw Exception(Error.CLIENT_ERROR.message)
+                in 500..599 -> throw Exception(Error.SERVER_ERROR.message)
+                else -> throw Exception(Error.UNEXPECTED_ERROR.message)
             }
         }
-    }
-
-    companion object{
-        private const val CLIENT_ERROR = "Client's error"
-        private const val SERVER_ERROR = "Server's error"
-        private const val UNEXPECTED_ERROR = "Unexpected error"
-        private const val NULL_BODY = "Null body"
     }
 }

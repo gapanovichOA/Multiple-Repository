@@ -1,10 +1,9 @@
 package com.example.exam.tablescreen
 
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.size.Scale
-import coil.size.ViewSizeResolver
+import com.bumptech.glide.Glide
 import com.example.domain.model.RepositoryModel
+import com.example.exam.R
 import com.example.exam.databinding.UserItemBinding
 
 class RepositoryViewHolder (
@@ -16,22 +15,30 @@ class RepositoryViewHolder (
         with(binding) {
             when(repositoryModel){
                 is RepositoryModel.GithubRepositoryModel ->{
-                    userImage.load(repositoryModel.owner.userImage){
-                        scale(Scale.FIT)
-                        size(ViewSizeResolver(root))
-                    }
+                    Glide
+                        .with(userImage.context)
+                        .load(repositoryModel.owner.userImage)
+                        .placeholder(R.drawable.ic_person)
+                        .error(R.drawable.ic_person)
+                        .fallback(R.drawable.ic_person)
+                        .fitCenter()
+                        .into(userImage)
                     title.text = repositoryModel.name
                     description.text = repositoryModel.description
-                    repository.text = "Github"
+                    repository.text = repositoryModel.type
                 }
                 is RepositoryModel.BitbucketRepositoryModel ->{
-                    userImage.load(repositoryModel.userImage){
-                        scale(Scale.FIT)
-                        size(ViewSizeResolver(root))
-                    }
+                    Glide
+                        .with(userImage.context)
+                        .load(repositoryModel.userImage)
+                        .placeholder(R.drawable.ic_person)
+                        .error(R.drawable.ic_person)
+                        .fallback(R.drawable.ic_person)
+                        .fitCenter()
+                        .into(userImage)
                     title.text = repositoryModel.name
                     description.text = repositoryModel.description
-                    repository.text = "Bitbucket"
+                    repository.text = repositoryModel.type
                 }
             }
 
